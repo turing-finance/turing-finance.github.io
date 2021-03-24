@@ -1,0 +1,207 @@
+---
+title: "BTC-USD"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    fig_mobile: TRUE
+    theme: lumen
+    social: ["twitter", "facebook"]
+---
+
+```{r setup, include=FALSE}
+library(BatchGetSymbols)
+library(DT)
+library(prophet)
+```
+
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-177453627-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-177453627-1');
+</script> 
+</head>
+
+
+Row
+-----------------------------------------------------------------------
+
+###
+
+<center>
+
+<form method="get" action="https://www.google.com/search"><div><input type="text" name="q" size="55" style="color:#808080;" maxlength="255" value="Search in this site" onfocus="if(this.value==this.defaultValue)this.value=''; this.style.color='black';" onblur="if(this.value=='')this.value=this.defaultValue; "/><input type="submit" value="Search" /><input type="hidden" name="sitesearch" value="https://cghv94.github.io" /></div></form>
+
+<a href="https://github.com/turing-finance"><img src="https://cghv94.github.io/github.png"/></a> <a href="https://turing-finance.github.io"><img src="https://cghv94.github.io/linkedin.png"/></a> <a href="https://twitter.com/turingfinance"><img src="https://cghv94.github.io/twitter.png"/></a> <a href="https://www.youtube.com/channel/"><img src="https://cghv94.github.io/youtube.png"/></a>
+
+</center>
+
+________________________________________________________
+
+```{r}
+descarga_bitcoin <- BatchGetSymbols(tickers = "BTC-USD", first.date = "2014-09-15", last.date = Sys.Date(), freq.data = "daily", cache.folder = file.path(tempdir(), "BGS_Cache"))
+bitcoin<-data.frame(descarga_bitcoin$df.tickers)
+last <- tail(bitcoin$price.close, 1)
+```
+
+</br>
+
+<center>
+<table width="80%" border="0">
+<tr>    
+<td>
+
+<center>
+
+<b style="font-size: 300%">Precio del Bitcoin en dólares</b>
+
+<p style="font-size: 250%">[Turing Finance](https://turing-finance.github.io)</p>
+
+
+<p style="font-size: 150%">`r format(Sys.Date(), format = "%m/%d/%Y")`</p>
+
+</br>
+
+<audio controls><source src="https://turing-finance.github.io/audio-spanish/BTC-USD.wav" type="audio/wav"></audio>
+<p style="font-size: 100%">Reproducir el reporte</p>
+
+</center>
+
+</br>
+
+<p style="text-align: justify; font-size: 165%">Último `r last`</p>
+
+</br>
+</br>
+
+<center>
+<b style="font-size: 150%">Tendencia del precio del Bitcoin\n(anual, diaria and mensual)</b>
+
+</br>
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+bitcoin<-data.frame(bitcoin$ref.date,bitcoin$price.close)
+colnames(bitcoin) <- c("ds","y")
+m_bitcoin <- prophet(bitcoin)
+future_bitcoin <- make_future_dataframe(m_bitcoin, periods = 365)
+forecast_bitcoin <- predict(m_bitcoin, future_bitcoin)
+prophet_plot_components(m_bitcoin, forecast_bitcoin)
+```
+<p style="font-size: 100%">Fuente: elaboración propia. Revisa la [metodología](https://turing-finance.github.io/metodologia).</p>
+</center>
+
+</br>
+</br>
+
+<p style="text-align: justify; font-size: 165%">Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.</p>
+
+</br>
+</br>
+
+<center>
+<b style="font-size: 150%">Proyección del precio del Bitcoin a un año\n(dólares americanos)</b>
+
+</br>
+
+```{r}
+dyplot.prophet(m_bitcoin, forecast_bitcoin)
+```
+<p style="font-size: 100%">Fuente: elaboración propia. Revisa la [metodología](https://turing-finance.github.io/metodologia).</p>
+</center>
+
+</br>
+</br>
+
+<p style="text-align: justify; font-size: 165%">Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.</p>
+
+</br>
+</br>
+
+<center>
+<b style="font-size: 150%">Precio del Bitcoin en dólares americanos, datos históricos</b>
+
+</br>
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+colnames(bitcoin)<-c("Fecha","Precio")
+datatable(bitcoin)
+write.csv(x=bitcoin, file="btc-usd-es.csv")
+```
+<p style="font-size: 100%">Fuente: elaboración propia con datos de [Yahoo Finance](https://finance.yahoo.com/).</p>
+
+<form action="https://turing-finance.github.io/spanish/btc-usd-es.csv"><input type="submit" value="Descargar la serie"/></form>
+
+</center>
+
+</br>
+</br>
+
+<p style="text-align: justify; font-size: 165%">Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.</p>
+
+</br>
+
+<p style="text-align: justify; font-size: 165%">Usted puede generear un pronóstico de la tendencia del precio del Bitcoin mediante el software `R` y el siguiente código:</p>
+
+</br>
+
+```{r eval=FALSE, echo=TRUE}
+library(prophet)
+bitcoin <- read.csv("https://turing-finance.github.io/spanish/btc-usd-es.csv")
+bitcoin <- data.frame(bitcoin$Fecha,bitcoin$Precio)
+colnames(bitcoin) <- c("ds","y")
+m_bitcoin <- prophet(bitcoin)
+futuro_bitcoin <- make_future_dataframe(m_bitcoin, periods = 365)
+pronostico_bitcoin <- predict(m_bitcoin, futuro_bitcoin)
+dyplot.prophet(m_bitcoin, pronostico_bitcoin)
+```
+
+</br>
+
+<p style="text-align: justify; font-size: 165%">Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.</p>
+
+</br>
+</br>
+
+<p style="text-align: justify; font-size: 250%">Referencias</p>
+
+</br>
+
+<p style="text-align: justify; font-size: 165%">
+1. 
+</br>
+2. 
+</p>
+
+</br>
+</br>
+</br>
+
+________________________________________________________
+
+
+</br>
+
+<center>
+<table width="80%" border="0">
+<tr>
+<td align="center">
+<p style="text-align: justify; font-size: 100%">[C. Hernández](https://chgv94.github.io), [David Luna](https://github.com/davluna). Este sitio está vinculado con [Google Analytics](https://analytics.google.com/analytics/web/provision/#/provision) y [Google Search Console](https://search.google.com/search-console/about). Esta obra fue generada mediante R en `r format(Sys.Date(), format = "%B %d, %Y")`. Esta obra está bajo una <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">licencia de Creative Commons Reconocimiento-NoComercial-CompartirIgual 4.0 Internacional.</a> [Creative Commons (CC)](http://creativecommons.org/licenses/by-nc-sa/4.0/).<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a></p>
+</td>
+</tr>
+</table>
+</center>
+
+</br>
+
+________________________________________________________
+
+
+</td>
+</tr>
+</table>
+</center>
